@@ -11,13 +11,16 @@ use Sunra\PhpSimple\HtmlDomParser;
  * @param $admin_url
  * @param $username
  * @param $password
+ * @param bool $b_debug
+ * @param bool $b_keep_cookies
  * @throws CurlHelperException
  * @return CurlHelper
  */
-function log_into_word($login_url,$admin_url,$username,$password) {
+function log_into_word($login_url,$admin_url,$username,$password,$b_debug,$b_keep_cookies) {
 
-	$ch = new CurlHelper(true);
-	$ch->b_debug = false;
+	$ch = new CurlHelper(!$b_keep_cookies);
+	$ch->b_debug = $b_debug;
+
 	//set test cookie, WP will try to read it in the next one to see if the browser supports cookies
 	$ch->curl_helper($login_url,$http_code,null,false,'text');
 
@@ -203,7 +206,7 @@ function find_activation_link($uploaded_html) {
 
 	$link = $html->find('a.button-primary');
 	if (empty($link)) {
-		throw new Exception("Camnot find activation link");
+		throw new Exception("Cannot find activation link. This can happen if the plugin was already installed or uploaded");
 	}
 
 	return $link[0]->href;

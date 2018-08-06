@@ -8,6 +8,8 @@ $debug_messages = [];
 
 try {
 	$secret = $key = $base_url = $username = $password = '';
+	$b_debug = false;
+	$b_keep_cookies = false;
     if ($_POST) {
         if (isset($_POST['submit-download'])) {
             //download the zip
@@ -38,6 +40,14 @@ try {
                 exit;
 
         } else {
+
+	        if (isset($_POST['wp-admin-debug'])) {
+		        $b_debug = true;
+	        }
+
+	        if (isset($_POST['wp-admin-cookies'])) {
+		        $b_keep_cookies = true;
+	        }
 
 	        if (!isset($_POST['test-secret-in-plugin'])) {
 		        throw new Exception("Need to Put in a Test Secret. It can be any text");
@@ -70,7 +80,7 @@ try {
 
 	        $username = $_POST['wp-admin-user'];
 	        $password = $_POST['wp-admin-password'];
-	        $ch = log_into_word($login_url,$admin_url,$username,$password);
+	        $ch = log_into_word($login_url,$admin_url,$username,$password,$b_debug,$b_keep_cookies);
 	        $field_info = get_plugin_upload_inputs($ch,$admin_url);
 	        $fields = $field_info['inputs'];
 	        $url = $field_info['action'];
@@ -164,28 +174,51 @@ try {
 
 	<script src="js/timestamp_to_locale.js"></script>
     <script src="js/talk.js"></script>
+    <script>
+        $(document).ready(function(){
+         //   $('[data-toggle="tooltip"]').tooltip();
+        });
+    </script>
 </head>
 <body>
 <?php print_alerts( $messages, 'success' ) ?>
 <?php print_alerts( $issues, 'danger' ) ?>
 <div class="container">
 	<div class="row" style="margin-bottom: 2em">
-		<div class="col-sm-12" style="text-align: center">
+		<div class="col-sm-12 col-md-4" style="">
 			<h1 class="display-2" >Wordpress Install Demo</h1>
-            <span>This will customize a simple plugin called <b>Install Test</b><br> which will display a message on the top of the admin page</b></span>
+            <p>This will customize a simple plugin called <b>Install Test</b>.</p>
+                <br>
+            <p> All this plugin does is display a message with the key and secret, entered below, on the top of the admin page.</p>
+               <br>
+            <p>If the admin credentials are entered, this script will automatically install the plugin.  Or you can download the customize plugin as a zip</p>
             <br>
-            <span>This script will automatically install the plugin, or you can download the customize plugin as a zip</span>
+            <p>You can see curl debug info if you check that box, and you can see cookie info in the files at lib/tmp if you check that one</p>
 		</div>
-	</div>
 
-	<div class="row" style="">
 
-		<div class="col-sm-4 col-sm-offset-4 ">
+		<div class="col-sm-12 col-md-4 col-md-offset-2 ">
 			<div class="form-group">
 				<form action="install_demo.php" method="post" enctype="multipart/form-data">
 					<div style="margin-bottom: 2em">
 
 					</div>
+                    <div class="form-group">
+                        <span>
+                        <label for="wp-admin-debug">Debug Information</label>
+                        <input  value="1" type="checkbox" <?= $b_debug ? "checked" : ""?> class=" " id="wp-admin-debug" name="wp-admin-debug"
+                                data-toggle='tooltip' data-placement='right' data-original-title="Check to See Curl Debug Info"  data-container="body">
+                        </span>
+
+                        <span style="margin-left: 3em">
+                        <label for="wp-admin-cookies">Cookie Storage</label>
+                        <input  value="1" type="checkbox" <?= $b_keep_cookies ? "checked" : ""?> class="  " id="wp-admin-cookies" name="wp-admin-cookies"
+                                data-toggle='tooltip' data-placement='right' data-original-title="Check to Save Cookie temp file in project directory lib/tmp" data-container="body">
+                        </span>
+
+                    </div>
+
+
                     <div class="form-group">
                         <label for="wp-admin-url">Wordpress URL</label>
                         <input  value="<?= $base_url ?>" type="url" class="form-control input-lg" id="wp-admin-url" name="wp-admin-url" autocomplete="url" placeholder="Full url to the wordpress root">

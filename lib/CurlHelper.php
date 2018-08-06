@@ -267,14 +267,20 @@ class CurlHelper {
 
 			$curl_output = curl_exec( $this->ch );
 
+
+
+
+			$http_code = intval( curl_getinfo( $this->ch, CURLINFO_HTTP_CODE ) );
+
+			if ($b_verbose) {
+				echo "<div style='color: blue;background-color: white'>Server returned code $http_code</div>\n";
+			}
+
 			if ( $b_verbose ) {
 				rewind( $verbose );
 				$verboseLog = stream_get_contents( $verbose );
 				echo "Verbose information:\n<pre>", htmlspecialchars( $verboseLog ), "</pre>\n";
 			}
-
-
-			$http_code = intval( curl_getinfo( $this->ch, CURLINFO_HTTP_CODE ) );
 
 			if ( curl_errno( $this->ch ) ) {
 				throw new CurlHelperException( $fields, "could not open url: $url because of curl error: ", curl_error( $this->ch ) );
