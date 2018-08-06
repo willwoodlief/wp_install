@@ -1,0 +1,4 @@
+/.idea/
+/vendor/
+/lib/tmp/
+!/lib/tmp/.keep

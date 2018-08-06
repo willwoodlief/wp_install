@@ -1,0 +1,6 @@
+{
+    "require": {
+        "neitanod/forceutf8": "^2.0",
+        "sunra/php-simple-html-dom-parser": "^1.5"
+    }
+}
